@@ -1,0 +1,3 @@
+#!  /bin/bash
+
+javac -d build/classes -sourcepath src src/afs/proxy/server/ProxyServer.java $@

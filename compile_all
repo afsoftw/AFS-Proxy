@@ -1,0 +1,4 @@
+#!  /bin/bash
+
+./compile_proxy_server
+./compile_proxy_client
