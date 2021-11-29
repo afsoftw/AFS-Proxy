@@ -3,6 +3,7 @@ package afs.proxy.server;
 import java.net.*;
 import java.io.*;
 import java.util.*;
+import afs.proxy.common.*;
 
 class TcpClientReadThread implements Runnable
 {
@@ -42,11 +43,13 @@ class TcpClientReadThread implements Runnable
 			{
 				if (len > 0) 
 				{
+					DataPackage dataPackage = new DataPackage (proxyClientOutputStream);
 					byte[] bufOut = new byte[len];
 					System.arraycopy (bufIn, 0, bufOut, 0, len);
-					DataPackage dataPackage = new DataPackage (proxyClientOutputStream, bufOut, len);
+					dataPackage.setStringData (Util.toBase58 (bufOut));
+					dataPackage.type = 1;
 					PackageQueue.addPackage ("1", dataPackage);
-					System.out.println ("-> " + len);
+					//System.out.println ("-> " + len);
 				}
 				len = tcpClientInputStream.read (bufIn, 0, buf_size);
 			}

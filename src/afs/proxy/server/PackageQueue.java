@@ -18,11 +18,21 @@ class PackageQueue
 		Map.Entry pair = packageMap.firstEntry();
 		if (pair == null) return 0;
 		DataPackage dataPackage = (DataPackage) pair.getValue ();
-		try
+
+		if (dataPackage.type == 0)
 		{
-			dataPackage.getOutputStream().write (dataPackage.getBuffer(), 0, dataPackage.getLen());
+			try
+			{
+				dataPackage.getOutputStream().write (dataPackage.getByteData(), 0, dataPackage.getByteDataLen());
+			}
+			catch (IOException e) {}	
 		}
-		catch (IOException e) {}
+		else
+		{
+			PrintWriter printWriter = new PrintWriter (dataPackage.getOutputStream(), true);
+			printWriter.println (dataPackage.getStringData());
+		}
+
 		packageMap.remove (pair.getKey ());
 
 		return 1;

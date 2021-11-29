@@ -5,14 +5,15 @@ import java.io.*;
 class DataPackage
 {
 	private OutputStream stream;
-	private byte[] buf;
-	private int len;
+	private byte[] byteData;	
+	private String stringData;
+	private int byteDataLen;
+	
+	public int type;
 
-	DataPackage (OutputStream stream, byte[] buf, int len)
+	DataPackage (OutputStream stream)
 	{
 		this.stream = stream;
-		this.buf = buf;
-		this.len = len;
 	}
 
 	public OutputStream getOutputStream ()
@@ -20,13 +21,30 @@ class DataPackage
 		return this.stream;
 	}
 
-	public byte[] getBuffer ()
+	public void setByteData (byte[] data, int len)
 	{
-		return this.buf;
+		this.byteData = new byte[len];
+		System.arraycopy (data, 0, this.byteData, 0, len);
+		this.byteDataLen = len;
 	}
 
-	public int getLen ()
+	public byte[] getByteData ()
 	{
-		return this.len;
+		return this.byteData;
+	}
+
+	public void setStringData (String data)
+	{
+		this.stringData = data;
+	}
+
+	public String getStringData ()
+	{
+		return this.stringData;
+	}
+
+	public int getByteDataLen ()
+	{
+		return this.byteDataLen;
 	}
 }

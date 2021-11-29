@@ -3,6 +3,9 @@ package afs.proxy.server;
 import java.net.*;
 import java.io.*;
 import java.util.*;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import afs.proxy.common.*;
 
 class ProxyClientReadThread implements Runnable
 {
@@ -25,30 +28,47 @@ class ProxyClientReadThread implements Runnable
 	{
 		OutputStream tcpClientOutputStream = null;
 		InputStream proxyClientInputStream = null;
+		BufferedReader proxyClientBufferedReader = null;
 
 		try
 		{
 			proxyClientInputStream = this.proxyClientSocket.getInputStream();
+			proxyClientBufferedReader = new BufferedReader (new InputStreamReader (proxyClientInputStream));
 			tcpClientOutputStream = this.tcpClientSocket.getOutputStream();
 		}
 		catch (IOException e) {}
 
 		int len = 0;
-		byte[] bufIn = new byte[bufSize];
+		//byte[] bufIn = new byte[bufSize];
+		byte[] buf = null;
 
 		try
 		{
 			while (len != -1)
 			{
-				if (len > 0) 
+				if (len > 0)
 				{
-					byte[] bufOut = new byte[len];
-					System.arraycopy (bufIn, 0, bufOut, 0, len);
-					DataPackage dataPackage = new DataPackage (tcpClientOutputStream, bufOut, len);
+					//byte[] bufOut = new byte[len];
+					//System.arraycopy (bufIn, 0, bufOut, 0, len);
+					DataPackage dataPackage = new DataPackage (tcpClientOutputStream);
+					dataPackage.setByteData (buf, len);
+					dataPackage.type = 0;
 					PackageQueue.addPackage ("1", dataPackage);
-					System.out.println ("<- " + len);
+					//System.out.println ("<- " + len);
 				}
-				len = proxyClientInputStream.read (bufIn, 0, bufSize);
+				//len = proxyClientInputStream.read (bufIn, 0, bufSize);
+				
+				String data = proxyClientBufferedReader.readLine ();
+				if (data == null)
+				{
+					buf = null;	
+					len = 0;
+				}
+				else
+				{
+					buf = Util.fromBase58 (data);
+					len = buf.length;
+				}
 			}
 		}
 		catch (IOException e) {}
