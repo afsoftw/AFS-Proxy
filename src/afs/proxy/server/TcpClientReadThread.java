@@ -47,6 +47,7 @@ class TcpClientReadThread implements Runnable
 					byte[] bufOut = new byte[len];
 					System.arraycopy (bufIn, 0, bufOut, 0, len);
 					dataPackage.setStringData (Util.toBase58 (bufOut));
+					dataPackage.setByteDataLen (len);
 					dataPackage.type = 1;
 					PackageQueue.addPackage ("1", dataPackage);
 					//System.out.println ("-> " + len);

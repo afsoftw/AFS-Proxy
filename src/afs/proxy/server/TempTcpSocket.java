@@ -8,13 +8,13 @@ class TempTcpSocket
 
 	public static synchronized void setSocket (Socket socket)
 	{
-		System.out.println("setSocket()");
+		//System.out.println("setSocket()");
 		static_socket = socket;
 	}
 
 	public static synchronized Socket getSocket ()
 	{
-		System.out.println("getSocket()");
+		//System.out.println("getSocket()");
 		return static_socket;	
 	}
 }

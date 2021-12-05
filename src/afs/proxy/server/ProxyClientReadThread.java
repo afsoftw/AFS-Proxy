@@ -41,6 +41,7 @@ class ProxyClientReadThread implements Runnable
 		int len = 0;
 		//byte[] bufIn = new byte[bufSize];
 		byte[] buf = null;
+		HashMap<String, String> mapIn = new HashMap<String, String> ();
 
 		try
 		{
@@ -58,16 +59,19 @@ class ProxyClientReadThread implements Runnable
 				}
 				//len = proxyClientInputStream.read (bufIn, 0, bufSize);
 				
-				String data = proxyClientBufferedReader.readLine ();
-				if (data == null)
+				String jsonString = proxyClientBufferedReader.readLine ();
+				if (jsonString == null)
 				{
 					buf = null;	
 					len = 0;
 				}
 				else
 				{
+					Util.jsonParse (jsonString, mapIn, null);
+					len = Integer.parseInt (mapIn.get ("length"));
+					String data = mapIn.get ("data");
 					buf = Util.fromBase58 (data);
-					len = buf.length;
+					//len = buf.length;
 				}
 			}
 		}

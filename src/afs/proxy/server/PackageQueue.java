@@ -30,7 +30,9 @@ class PackageQueue
 		else
 		{
 			PrintWriter printWriter = new PrintWriter (dataPackage.getOutputStream(), true);
-			printWriter.println (dataPackage.getStringData());
+			String jsonString = "{\"length\":\"" + Integer.toString(dataPackage.getByteDataLen()) + "\",\"data\":\"" 
+					+ dataPackage.getStringData() + "\"}";
+			printWriter.println (jsonString);
 		}
 
 		packageMap.remove (pair.getKey ());

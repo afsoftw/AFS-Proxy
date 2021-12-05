@@ -49,13 +49,13 @@ class TcpToProxyMovingThread implements Runnable
 		{
 			while (len != -1)
 			{
-				if (len > 0) 
+				if (len > 0)
 				{
-					//proxyOutputStream.write (buf, 0, len);
 					bufOut = new byte[len];
 					System.arraycopy (bufIn, 0, bufOut, 0, len);
-					String data = Util.toBase58 (bufOut);
-					proxyPrintWriter.println (data);
+					String jsonString = "{\"length\":\"" + Integer.toString(len) + "\",\"data\":\"" 
+					+ Util.toBase58 (bufOut) + "\"}";
+					proxyPrintWriter.println (jsonString);
 					//System.out.println ("<- " + len);
 				}
 				len = tcpInputStream.read (bufIn, 0, buf_size);

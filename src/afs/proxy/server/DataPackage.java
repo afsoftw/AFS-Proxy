@@ -43,6 +43,11 @@ class DataPackage
 		return this.stringData;
 	}
 
+	public void setByteDataLen (int len)
+	{
+		this.byteDataLen = len;
+	}
+
 	public int getByteDataLen ()
 	{
 		return this.byteDataLen;
