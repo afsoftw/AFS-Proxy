@@ -19,7 +19,6 @@ class ProxyClientReadThread implements Runnable
 	ProxyClientReadThread (Socket proxyClientSocket)
 	{
 		this.proxyClientSocket = proxyClientSocket;
-		this.tcpClientSocket = TempTcpSocket.getSocket();
 		this.thread = new Thread (this);
 		this.thread.start();
 	}
@@ -34,14 +33,13 @@ class ProxyClientReadThread implements Runnable
 		{
 			proxyClientInputStream = this.proxyClientSocket.getInputStream();
 			proxyClientBufferedReader = new BufferedReader (new InputStreamReader (proxyClientInputStream));
-			tcpClientOutputStream = this.tcpClientSocket.getOutputStream();
 		}
 		catch (IOException e) {}
 
 		int len = 0;
-		//byte[] bufIn = new byte[bufSize];
 		byte[] buf = null;
 		HashMap<String, String> mapIn = new HashMap<String, String> ();
+		Integer connectionId = 0;
 
 		try
 		{
@@ -49,16 +47,14 @@ class ProxyClientReadThread implements Runnable
 			{
 				if (len > 0)
 				{
-					//byte[] bufOut = new byte[len];
-					//System.arraycopy (bufIn, 0, bufOut, 0, len);
+					tcpClientOutputStream = ConnectionCounter.getConnectionSocket (connectionId).getOutputStream ();
 					DataPackage dataPackage = new DataPackage (tcpClientOutputStream);
 					dataPackage.setByteData (buf, len);
-					dataPackage.type = 0;
-					PackageQueue.addPackage ("1", dataPackage);
+					dataPackage.type = 1;
+					dataPackage.setConnectionId (connectionId);
+					PackageQueue.addPackage (Integer.toString (connectionId), dataPackage);
 					//System.out.println ("<- " + len);
 				}
-				//len = proxyClientInputStream.read (bufIn, 0, bufSize);
-				
 				String jsonString = proxyClientBufferedReader.readLine ();
 				if (jsonString == null)
 				{
@@ -66,12 +62,12 @@ class ProxyClientReadThread implements Runnable
 					len = 0;
 				}
 				else
-				{
+				{		
 					Util.jsonParse (jsonString, mapIn, null);
 					len = Integer.parseInt (mapIn.get ("length"));
+					connectionId = Integer.parseInt (mapIn.get ("conid"));
 					String data = mapIn.get ("data");
 					buf = Util.fromBase58 (data);
-					//len = buf.length;
 				}
 			}
 		}

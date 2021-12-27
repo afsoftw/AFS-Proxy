@@ -17,7 +17,7 @@ class PackageSendThread implements Runnable
 	public void run ()
 	{
 		while (1==1) 
-			if (PackageQueue.sendPackage ("1") == 0) 
+			if (PackageQueue.sendPackage () == 0) 
 			{
 				/*
 				try

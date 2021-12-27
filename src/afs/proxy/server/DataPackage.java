@@ -8,6 +8,7 @@ class DataPackage
 	private byte[] byteData;	
 	private String stringData;
 	private int byteDataLen;
+	private Integer connectionId;
 	
 	public int type;
 
@@ -51,5 +52,15 @@ class DataPackage
 	public int getByteDataLen ()
 	{
 		return this.byteDataLen;
+	}
+
+	public void setConnectionId (Integer id)
+	{
+		this.connectionId = id;
+	}
+
+	public Integer getConnectionId ()
+	{
+		return this.connectionId;
 	}
 }

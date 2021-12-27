@@ -11,13 +11,15 @@ class TcpClientReadThread implements Runnable
 
 	private Socket tcpClientSocket;
 	private Socket proxyClientSocket;
+	private Integer connectionId;
 
 	private final int buf_size = 65535;
 
-	TcpClientReadThread (Socket tcpClientSocket, Socket proxyClientSocket)
+	TcpClientReadThread (Socket tcpClientSocket, Socket proxyClientSocket, Integer connectionId)
 	{
 		this.tcpClientSocket = tcpClientSocket;
 		this.proxyClientSocket = proxyClientSocket;
+		this.connectionId = connectionId;
 		this.thread = new Thread (this);
 		this.thread.start();
 	}
@@ -37,19 +39,26 @@ class TcpClientReadThread implements Runnable
 		int len = 0;
 		byte[] bufIn = new byte[buf_size];
 
+		DataPackage dataPackage = new DataPackage (proxyClientOutputStream);
+		dataPackage.setConnectionId (this.connectionId);
+		dataPackage.type = 0;
+		PackageQueue.addPackage (Integer.toString (this.connectionId), dataPackage);
+		System.out.println ("Init new connection");
+
 		try
 		{
 			while (len != -1)
 			{
 				if (len > 0) 
 				{
-					DataPackage dataPackage = new DataPackage (proxyClientOutputStream);
+					dataPackage = new DataPackage (proxyClientOutputStream);
 					byte[] bufOut = new byte[len];
 					System.arraycopy (bufIn, 0, bufOut, 0, len);
 					dataPackage.setStringData (Util.toBase58 (bufOut));
 					dataPackage.setByteDataLen (len);
-					dataPackage.type = 1;
-					PackageQueue.addPackage ("1", dataPackage);
+					dataPackage.setConnectionId (this.connectionId);
+					dataPackage.type = 2;
+					PackageQueue.addPackage (Integer.toString (this.connectionId), dataPackage);
 					//System.out.println ("-> " + len);
 				}
 				len = tcpClientInputStream.read (bufIn, 0, buf_size);

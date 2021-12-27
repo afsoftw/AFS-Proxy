@@ -11,7 +11,6 @@ public class ProxyClient
 		String proxyAddress = "127.0.0.1";
 		int proxyPort = 10100;
 
-		Socket tcpSocket = null;
 		String tcpAddress = "127.0.0.1";
 		int tcpPort = 0;
 
@@ -63,27 +62,12 @@ public class ProxyClient
 			return;
 		}
 
-		try
-		{
-			tcpSocket = new Socket (tcpAddress, tcpPort);
-		}
-		catch (IOException e) 
-		{
-			System.out.println ("Could not connect to TCP service on " + tcpAddress + " port " + tcpPort);
-			error = true;
-		}
+		Globals.setProxyAddress (proxyAddress);
+		Globals.setProxyPort (proxyPort);
+		Globals.setTcpAddress (tcpAddress);
+		Globals.setTcpPort (tcpPort);
+		Globals.setProxySocket (proxySocket);
 
-		if (error)
-		{
-			try 
-			{
-				proxySocket.close();
-			}
-			catch (IOException e) {};
-			return;
-		}
-
-		ProxyToTcpMovingThread proxyToTcpMovingThread = new ProxyToTcpMovingThread (proxySocket, tcpSocket);
-		TcpToProxyMovingThread tcpToProxyMovingThread = new TcpToProxyMovingThread (tcpSocket, proxySocket);
+		ProxyToTcpMovingThread proxyToTcpMovingThread = new ProxyToTcpMovingThread ();
 	}
 }

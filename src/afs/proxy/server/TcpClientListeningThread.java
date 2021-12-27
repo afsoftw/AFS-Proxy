@@ -53,10 +53,8 @@ class TcpClientListeningThread implements Runnable
 
 			if (this.getStopFlag ()) return;
 
-			TempTcpSocket.setSocket (tcpClientSocket);
-			TcpClientReadThread TcpClientReadThread = new TcpClientReadThread (tcpClientSocket, this.proxyClientSocket);
-			// вернуть обратно в ProxyClientServicingThread 
-			ProxyClientReadThread proxyClientReadThread = new ProxyClientReadThread (this.proxyClientSocket);
+			Integer connectionId = ConnectionCounter.getNewConnectionId (tcpClientSocket);
+			TcpClientReadThread TcpClientReadThread = new TcpClientReadThread (tcpClientSocket, this.proxyClientSocket, connectionId);
 
 //			this.servicingThreadList.add (servicingThread);
 /*

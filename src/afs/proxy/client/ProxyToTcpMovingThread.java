@@ -12,16 +12,11 @@ import java.io.IOException;
 class ProxyToTcpMovingThread implements Runnable
 {
 	public Thread thread;
-
-	private Socket proxySocket;
-	private Socket tcpSocket;
 	
 	private final int buf_size = 65535;
 
-	ProxyToTcpMovingThread  (Socket proxySocket, Socket tcpSocket)
+	ProxyToTcpMovingThread  ()
 	{
-		this.proxySocket = proxySocket;
-		this.tcpSocket = tcpSocket;
 		this.thread = new Thread (this);
 		this.thread.start();
 	}
@@ -31,12 +26,13 @@ class ProxyToTcpMovingThread implements Runnable
 		InputStream proxyInputStream = null;
 		BufferedReader proxyBufferedReader = null;
 		OutputStream tcpOutputStream = null;
+		Socket proxySocket = Globals.getProxySocket ();
 
 		try
 		{
-			proxyInputStream = this.proxySocket.getInputStream();
+			proxyInputStream = proxySocket.getInputStream();
 			proxyBufferedReader = new BufferedReader (new InputStreamReader (proxyInputStream));
-			tcpOutputStream = this.tcpSocket.getOutputStream();
+			//tcpOutputStream = this.tcpSocket.getOutputStream();
 		}
 		catch (IOException e)
 		{
@@ -44,6 +40,7 @@ class ProxyToTcpMovingThread implements Runnable
 		}
 
 		int len = 0;
+		int id = 0;
 		//byte[] buf = new byte[buf_size];
 		byte[] buf = null;
 		HashMap<String, String> mapIn = new HashMap<String, String> ();
@@ -54,17 +51,30 @@ class ProxyToTcpMovingThread implements Runnable
 			{
 				if (len > 0) 
 				{
+					tcpOutputStream = TcpConnection.getOutputStream (id);
 					tcpOutputStream.write (buf, 0, len);
 					//System.out.println ("-> " + len);
 				}
-				//len = proxyInputStream.read (buf, 0, buf_size);
 				String jsonData = proxyBufferedReader.readLine ();
-
 				Util.jsonParse (jsonData, mapIn, null);
-				len = Integer.parseInt (mapIn.get ("length"));
-				String data = mapIn.get ("data");
-				buf = Util.fromBase58 (data);
-				//len = buf.length;
+				String lenStr = mapIn.get ("length");
+				if (lenStr != null) len = Integer.parseInt (lenStr);
+				else len = 0;
+				if (len > 0)
+				{
+					id = Integer.parseInt (mapIn.get ("conid"));
+					String data = mapIn.get ("data");
+					buf = Util.fromBase58 (data);
+				}
+				else
+				{
+					Boolean init = Boolean.parseBoolean (mapIn.get ("init"));
+					if (init) 
+					{
+						id = Integer.parseInt (mapIn.get ("conid"));
+						TcpConnection.create (id);
+					}
+				}
 			}
 		}
 		catch (IOException e) 

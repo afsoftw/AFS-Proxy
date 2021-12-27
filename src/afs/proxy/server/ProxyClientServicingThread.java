@@ -20,7 +20,6 @@ class ProxyClientServicingThread implements Runnable
 	public void run ()
 	{
 		TcpClientListeningThread tcpClientListeningThread = new TcpClientListeningThread (10101, this.proxyClientSocket);
-		//  временно перенесено в TcpClientListeningThread
-		//ProxyClientReadThread proxyClientReadThread = new ProxyClientReadThread (this.proxyClientSocket);
+		ProxyClientReadThread proxyClientReadThread = new ProxyClientReadThread (this.proxyClientSocket);
 	}
 }

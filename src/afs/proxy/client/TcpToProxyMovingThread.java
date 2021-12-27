@@ -12,14 +12,14 @@ class TcpToProxyMovingThread implements Runnable
 	public Thread thread;
 
 	private Socket tcpSocket;
-	private Socket proxySocket;
+	private Integer connectionId;
 
 	private final int buf_size = 65535;
 
-	TcpToProxyMovingThread  (Socket tcpSocket, Socket proxySocket)
+	TcpToProxyMovingThread  (Integer connectionId, Socket tcpSocket)
 	{
 		this.tcpSocket = tcpSocket;
-		this.proxySocket = proxySocket;
+		this.connectionId = connectionId;
 		this.thread = new Thread (this);
 		this.thread.start();
 	}
@@ -29,11 +29,12 @@ class TcpToProxyMovingThread implements Runnable
 		InputStream tcpInputStream = null;
 		OutputStream proxyOutputStream = null;
 		PrintWriter proxyPrintWriter = null;
+		Socket proxySocket = Globals.getProxySocket ();
 
 		try
 		{
 			tcpInputStream = this.tcpSocket.getInputStream();
-			proxyOutputStream = this.proxySocket.getOutputStream();
+			proxyOutputStream = proxySocket.getOutputStream();
 			proxyPrintWriter = new PrintWriter (proxyOutputStream, true);
 		}
 		catch (IOException e)
@@ -53,8 +54,9 @@ class TcpToProxyMovingThread implements Runnable
 				{
 					bufOut = new byte[len];
 					System.arraycopy (bufIn, 0, bufOut, 0, len);
-					String jsonString = "{\"length\":\"" + Integer.toString(len) + "\",\"data\":\"" 
-					+ Util.toBase58 (bufOut) + "\"}";
+					String jsonString = "{\"conid\":\"" + Integer.toString(this.connectionId)
+						+"\",\"length\":\"" + Integer.toString(len) + "\",\"data\":\"" 
+						+ Util.toBase58 (bufOut) + "\"}";
 					proxyPrintWriter.println (jsonString);
 					//System.out.println ("<- " + len);
 				}

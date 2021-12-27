@@ -13,7 +13,7 @@ class PackageQueue
 		packageMap.put (connectionId + "-" + getNextPackageId (connectionId), dataPackage);
 	}
 
-	public static synchronized int sendPackage (String connectionId)
+	public static synchronized int sendPackage ()
 	{
 		Map.Entry pair = packageMap.firstEntry();
 		if (pair == null) return 0;
@@ -21,16 +21,25 @@ class PackageQueue
 
 		if (dataPackage.type == 0)
 		{
+			PrintWriter printWriter = new PrintWriter (dataPackage.getOutputStream(), true);
+			String jsonString = "{\"init\":\"true\",\"conid\":\"" 
+					+ Integer.toString(dataPackage.getConnectionId()) +"\"}";
+			printWriter.println (jsonString);
+		}
+		else if (dataPackage.type == 1)
+		{
 			try
 			{
 				dataPackage.getOutputStream().write (dataPackage.getByteData(), 0, dataPackage.getByteDataLen());
 			}
 			catch (IOException e) {}	
 		}
-		else
+		else if (dataPackage.type == 2)
 		{
 			PrintWriter printWriter = new PrintWriter (dataPackage.getOutputStream(), true);
-			String jsonString = "{\"length\":\"" + Integer.toString(dataPackage.getByteDataLen()) + "\",\"data\":\"" 
+			String jsonString = "{\"conid\":\"" + Integer.toString(dataPackage.getConnectionId())
+					+ "\",\"length\":\"" + Integer.toString(dataPackage.getByteDataLen()) 
+					+ "\",\"data\":\"" 
 					+ dataPackage.getStringData() + "\"}";
 			printWriter.println (jsonString);
 		}
