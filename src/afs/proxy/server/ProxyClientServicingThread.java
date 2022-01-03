@@ -1,8 +1,6 @@
 package afs.proxy.server;
 
-import java.net.*;
-import java.io.*;
-import java.util.*;
+import java.net.Socket;
 
 class ProxyClientServicingThread implements Runnable
 {

@@ -6,7 +6,7 @@ import java.io.OutputStream;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.HashMap;
-import afs.proxy.common.*;
+import afs.proxy.common.Util;
 import java.io.IOException;
 
 class ProxyToTcpMovingThread implements Runnable
@@ -36,12 +36,12 @@ class ProxyToTcpMovingThread implements Runnable
 		}
 		catch (IOException e)
 		{
+			Globals.setIsProxyConnected (false);
 			return;
 		}
 
 		int len = 0;
 		int id = 0;
-		//byte[] buf = new byte[buf_size];
 		byte[] buf = null;
 		HashMap<String, String> mapIn = new HashMap<String, String> ();
 
@@ -56,6 +56,11 @@ class ProxyToTcpMovingThread implements Runnable
 					//System.out.println ("-> " + len);
 				}
 				String jsonData = proxyBufferedReader.readLine ();
+				if (jsonData == null)
+				{
+					Globals.setIsProxyConnected (false);
+					return;
+				}
 				Util.jsonParse (jsonData, mapIn, null);
 				String lenStr = mapIn.get ("length");
 				if (lenStr != null) len = Integer.parseInt (lenStr);
@@ -76,9 +81,11 @@ class ProxyToTcpMovingThread implements Runnable
 					}
 				}
 			}
+			Globals.setIsProxyConnected (false);
 		}
 		catch (IOException e) 
 		{
+			Globals.setIsProxyConnected (false);
 			return;
 		}
 	}

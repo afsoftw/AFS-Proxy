@@ -1,9 +1,10 @@
 package afs.proxy.server;
 
-import java.net.*;
-import java.io.*;
-import java.util.*;
-import afs.proxy.common.*;
+import java.net.Socket;
+import java.io.InputStream;
+import java.io.OutputStream;
+import afs.proxy.common.Util;
+import java.io.IOException;
 
 class TcpClientReadThread implements Runnable
 {

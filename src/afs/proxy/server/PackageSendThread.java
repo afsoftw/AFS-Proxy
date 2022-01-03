@@ -1,9 +1,5 @@
 package afs.proxy.server;
 
-import java.net.*;
-import java.io.*;
-import java.util.*;
-
 class PackageSendThread implements Runnable
 {
 	public Thread thread;
@@ -16,16 +12,21 @@ class PackageSendThread implements Runnable
 
 	public void run ()
 	{
-		while (1==1) 
-			if (PackageQueue.sendPackage () == 0) 
+		int i = 0;
+
+		while (1 == 1)
+			if (PackageQueue.sendPackage () == 0)
 			{
-				/*
-				try
+				i++;
+				if (i >= 100000000)
 				{
-					this.thread.sleep (100);
+					try
+					{
+						this.thread.sleep (100);
+					}
+					catch (InterruptedException e) {}
 				}
-				catch (InterruptedException e) {}
-				*/
 			}
+			else i = 0;
 	}
 }

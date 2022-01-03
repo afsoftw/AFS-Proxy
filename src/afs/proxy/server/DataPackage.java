@@ -1,6 +1,6 @@
 package afs.proxy.server;
 
-import java.io.*;
+import java.io.OutputStream;
 
 class DataPackage
 {

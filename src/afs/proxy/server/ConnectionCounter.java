@@ -1,6 +1,6 @@
 package afs.proxy.server;
 
-import java.util.*;
+import java.util.HashMap;
 import java.net.Socket;
 
 class ConnectionCounter
@@ -19,30 +19,4 @@ class ConnectionCounter
 	{
 		return socketMap.get (id);
 	}
-/*
-	public static synchronized String getNextConnectionId (String nodeId)
-	{
-		String time = Long.toHexString (new Date ().getTime()).toUpperCase ();
-		if ((time.length () & 1) != 0) time = "0" + time;
-		String connectionBase = nodeId + time;
-
-		Integer id = counterMap.get (connectionBase);
-		if (id != null)
-		{
-			id++;
-			counterMap.replace (connectionBase, id);
-		}
-		else
-		{
-			id = new Integer (1);
-			counterMap.put (connectionBase, id);
-		}
-
-		String connectionId = Integer.toHexString (id).toUpperCase ();
-		if ((connectionId.length () & 1) != 0) connectionId = "0" + connectionId;
-		connectionId = connectionBase + connectionId;
-		return connectionId;
-	}
-*/
-
 }

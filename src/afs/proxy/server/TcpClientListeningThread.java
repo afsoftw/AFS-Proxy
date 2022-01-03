@@ -1,8 +1,8 @@
 package afs.proxy.server;
 
-import java.net.*;
-import java.io.*;
-import java.util.*;
+import java.net.Socket;
+import java.net.ServerSocket;
+import java.io.IOException;
 
 class TcpClientListeningThread implements Runnable
 {
@@ -12,7 +12,6 @@ class TcpClientListeningThread implements Runnable
 	private Socket proxyClientSocket;
 	private boolean stopFlag;
 	private int port;
-	//private ArrayList<ServicingThread> servicingThreadList;
 
 	TcpClientListeningThread (int port, Socket proxyClientSocket)
 	{

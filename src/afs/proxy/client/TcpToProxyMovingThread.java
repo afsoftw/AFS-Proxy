@@ -4,7 +4,7 @@ import java.net.Socket;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import afs.proxy.common.*;
+import afs.proxy.common.Util;
 import java.io.IOException;
 
 class TcpToProxyMovingThread implements Runnable

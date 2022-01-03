@@ -1,13 +1,9 @@
 package afs.proxy.client;
 
-import java.net.Socket;
-import java.io.IOException;
-
 public class ProxyClient
 {
 	public static void main (String args[])
 	{
-		Socket proxySocket = null;
 		String proxyAddress = "127.0.0.1";
 		int proxyPort = 10100;
 
@@ -15,7 +11,7 @@ public class ProxyClient
 		int tcpPort = 0;
 
 		int argsLen = args.length;
-		boolean error = false;
+		//boolean error = false;
 
 		for (int i = 0; i < argsLen; i++)
 		{
@@ -52,22 +48,11 @@ public class ProxyClient
 			return;
 		}
 
-		try
-		{
-			proxySocket = new Socket (proxyAddress, proxyPort);
-		}
-		catch (IOException e) 
-		{
-			System.out.println ("Could not connect to proxy-server " + proxyAddress + " port " + proxyPort);
-			return;
-		}
-
 		Globals.setProxyAddress (proxyAddress);
 		Globals.setProxyPort (proxyPort);
 		Globals.setTcpAddress (tcpAddress);
 		Globals.setTcpPort (tcpPort);
-		Globals.setProxySocket (proxySocket);
 
-		ProxyToTcpMovingThread proxyToTcpMovingThread = new ProxyToTcpMovingThread ();
+		ProxyConnectingThread proxyConnectingThread  = new ProxyConnectingThread ();
 	}
 }

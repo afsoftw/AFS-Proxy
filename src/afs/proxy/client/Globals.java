@@ -9,6 +9,7 @@ class Globals
 	private static String tcpAddress;
 	private static Integer tcpPort;
 	private static Socket proxySocket;
+	private static boolean isProxyConnected = false;
 
 	public static synchronized void setProxyAddress (String address)
 	{
@@ -58,5 +59,15 @@ class Globals
 	public static synchronized Socket getProxySocket ()
 	{
 		return proxySocket;
+	}
+
+	public static synchronized void setIsProxyConnected (boolean isConnected)
+	{
+		isProxyConnected = isConnected;
+	}
+
+	public static synchronized boolean getIsProxyConnected ()
+	{
+		return isProxyConnected;
 	}
 }
