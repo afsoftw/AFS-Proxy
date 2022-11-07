@@ -49,6 +49,10 @@ class ProxyClientListeningThread implements Runnable
 			}
 
 			if (this.getStopFlag ()) return;
+
+			TcpClientListeningThread tcpClientListeningThread = new TcpClientListeningThread (10101, proxyClientSocket);
+			ProxyClientReadThread proxyClientReadThread = new ProxyClientReadThread (proxyClientSocket);
+
 /*
 			Socket remoteSocket = null;
 
@@ -58,7 +62,9 @@ class ProxyClientListeningThread implements Runnable
 			}
 			catch (IOException e) {}
 */
-			ProxyClientServicingThread proxyClientServicingThread = new ProxyClientServicingThread (proxyClientSocket);
+
+			//ProxyClientServicingThread proxyClientServicingThread = new ProxyClientServicingThread (proxyClientSocket);
+
 			//RemoteSocketReadThread remoteSocketReadThread = new RemoteSocketReadThread (localSocket, remoteSocket);
 //			this.servicingThreadList.add (servicingThread);
 /*
