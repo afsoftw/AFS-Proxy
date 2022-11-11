@@ -13,7 +13,7 @@ class ProxyToTcpMovingThread implements Runnable
 {
 	public Thread thread;
 	
-	private final int buf_size = 65535;
+	//private final int buf_size = 65535;
 
 	ProxyToTcpMovingThread  ()
 	{

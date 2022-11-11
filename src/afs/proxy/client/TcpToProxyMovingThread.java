@@ -14,7 +14,7 @@ class TcpToProxyMovingThread implements Runnable
 	private Socket tcpSocket;
 	private Integer connectionId;
 
-	private final int buf_size = 65535;
+	private final int buf_size = 1460; //65535; //чем больше, тем дольше ждать наполнения буфера :(
 
 	TcpToProxyMovingThread  (Integer connectionId, Socket tcpSocket)
 	{

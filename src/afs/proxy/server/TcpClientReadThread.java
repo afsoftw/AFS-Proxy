@@ -43,7 +43,7 @@ class TcpClientReadThread implements Runnable
 		DataPackage dataPackage = new DataPackage (proxyClientOutputStream);
 		dataPackage.setConnectionId (this.connectionId);
 		dataPackage.type = 0;
-		PackageQueue.addPackage (Integer.toString (this.connectionId), dataPackage);
+		TcpClientPackageQueue.addPackage (Integer.toString (this.connectionId), dataPackage);
 		System.out.println ("Init new connection");
 
 		try
@@ -59,7 +59,7 @@ class TcpClientReadThread implements Runnable
 					dataPackage.setByteDataLen (len);
 					dataPackage.setConnectionId (this.connectionId);
 					dataPackage.type = 2;
-					PackageQueue.addPackage (Integer.toString (this.connectionId), dataPackage);
+					TcpClientPackageQueue.addPackage (Integer.toString (this.connectionId), dataPackage);
 					//System.out.println ("-> " + len);
 				}
 				len = tcpClientInputStream.read (bufIn, 0, buf_size);

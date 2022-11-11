@@ -54,7 +54,7 @@ class ProxyClientReadThread implements Runnable
 					dataPackage.setByteData (buf, len);
 					dataPackage.type = 1;
 					dataPackage.setConnectionId (connectionId);
-					PackageQueue.addPackage (Integer.toString (connectionId), dataPackage);
+					ProxyClientPackageQueue.addPackage (Integer.toString (connectionId), dataPackage);
 					//System.out.println ("<- " + len);
 				}
 				String jsonString = proxyClientBufferedReader.readLine ();

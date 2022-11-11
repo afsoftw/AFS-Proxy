@@ -18,7 +18,10 @@ class PackageSendThread implements Runnable
 
 		while (1 == 1)
 		{
-			if (PackageQueue.sendPackage () == 1)
+			int tcpClientEndResult = TcpClientPackageQueue.sendPackage ();
+			int proxyClientEndResult = ProxyClientPackageQueue.sendPackage ();
+
+			if (tcpClientEndResult == 1 || proxyClientEndResult == 1)
 			{
 				if (lastNotEmpty)
 				{
