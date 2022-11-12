@@ -11,17 +11,16 @@ public class ProxyClient
 		int tcpPort = 0;
 
 		int argsLen = args.length;
-		//boolean error = false;
 
 		for (int i = 0; i < argsLen; i++)
 		{
 			if (args[i].equals ("-h") || args[i].equals ("--help"))
 			{
 				System.out.println ("  -h,  --help           Print this help");
-				System.out.println ("  -a,  --proxy-address  Specify address of proxy-server");
-				System.out.println ("  -p,  --proxy-port     Specify port of proxy-server");
-				System.out.println ("  -A,  --tcp-address    Specify address of local tcp service");
-				System.out.println ("  -P,  --tcp-port       Specify port of local tcp service");
+				System.out.println ("  -a,  --proxy-address  Specify address of proxy-server (default: 127.0.0.1)");
+				System.out.println ("  -p,  --proxy-port     Specify port of proxy-server (default: 10100)");
+				System.out.println ("  -A,  --tcp-address    Specify address of tcp service (default: 127.0.0.1)");
+				System.out.println ("  -P,  --tcp-port       Specify port of tcp service (default: 0)");
 				return;
 			}
 			else if (args[i].equals ("-a") || args[i].equals ("--proxy-address"))

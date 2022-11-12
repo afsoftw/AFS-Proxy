@@ -28,7 +28,7 @@ class ProxyClientListeningThread implements Runnable
 		}
 		catch (IOException e)
 		{
-			System.out.println ("error");
+			System.out.println (" Server socket error");
 			return;
 		}
 
@@ -43,38 +43,15 @@ class ProxyClientListeningThread implements Runnable
 			{
 				if (!this.getStopFlag ())
 				{
-					System.out.println ("error");
+					System.out.println ("Proxy client socket error");
 				}
 				return;
 			}
 
 			if (this.getStopFlag ()) return;
 
-			TcpClientListeningThread tcpClientListeningThread = new TcpClientListeningThread (10101, proxyClientSocket);
+			TcpClientListeningThread tcpClientListeningThread = new TcpClientListeningThread (Globals.getTcpPort (), proxyClientSocket);
 			ProxyClientReadThread proxyClientReadThread = new ProxyClientReadThread (proxyClientSocket);
-
-/*
-			Socket remoteSocket = null;
-
-			try
-			{
-				remoteSocket = new Socket ("127.0.0.1", 22);
-			}
-			catch (IOException e) {}
-*/
-
-			//ProxyClientServicingThread proxyClientServicingThread = new ProxyClientServicingThread (proxyClientSocket);
-
-			//RemoteSocketReadThread remoteSocketReadThread = new RemoteSocketReadThread (localSocket, remoteSocket);
-//			this.servicingThreadList.add (servicingThread);
-/*
-			ListIterator<ServicingThread> iterator = this.servicingThreadList.listIterator ();
-			while (iterator.hasNext ())
-			{
-				servicingThread = iterator.next ();
-				if (!servicingThread.thread.isAlive ()) iterator.remove ();
-			}
-*/
 		}
 	}
 
