@@ -44,7 +44,7 @@ class TcpClientReadThread implements Runnable
 		dataPackage.setConnectionId (this.connectionId);
 		dataPackage.type = 0;
 		TcpClientPackageQueue.addPackage (Integer.toString (this.connectionId), dataPackage);
-		System.out.println ("Init new connection");
+		//System.out.println ("Init new connection");
 
 		try
 		{
@@ -65,6 +65,8 @@ class TcpClientReadThread implements Runnable
 				len = tcpClientInputStream.read (bufIn, 0, buf_size);
 			}
 		}
-		catch (IOException e) {}	
+		catch (IOException e) {}
+
+		//System.out.println ("TcpClientReadThread stopped!");
 	}
 }

@@ -26,13 +26,7 @@ public class ProxyServer
 				if (i < argsLen - 1) tcpPort = Integer.parseInt (args[i+1]);
 			}
 		}
-/*
-		if (tcpPort < 1 || tcpPort > 65565)
-		{
-			System.out.println ("Wrong tcp port " + tcpPort);
-			return;
-		}
-*/
+
 		Globals.setProxyPort (proxyPort);
 		Globals.setTcpPort (tcpPort);
 

@@ -14,7 +14,8 @@ class ProxyClientReadThread implements Runnable
 	public Thread thread;
 
 	private Socket proxyClientSocket;
-	private Socket tcpClientSocket;
+
+	private boolean isStopped = false;
 	
 	private final int bufSize = 65535;
 
@@ -36,43 +37,72 @@ class ProxyClientReadThread implements Runnable
 			proxyClientInputStream = this.proxyClientSocket.getInputStream();
 			proxyClientBufferedReader = new BufferedReader (new InputStreamReader (proxyClientInputStream));
 		}
-		catch (IOException e) {}
+		catch (IOException e) { 
+			this.setIsStopped ();
+			return; }
 
 		int len = 0;
 		byte[] buf = null;
 		HashMap<String, String> mapIn = new HashMap<String, String> ();
 		Integer connectionId = 0;
 
-		try
+		while (len != -1)
 		{
-			while (len != -1)
+			if (len > 0)
 			{
-				if (len > 0)
+				try
 				{
 					tcpClientOutputStream = ConnectionCounter.getConnectionSocket (connectionId).getOutputStream ();
-					DataPackage dataPackage = new DataPackage (tcpClientOutputStream);
-					dataPackage.setByteData (buf, len);
-					dataPackage.type = 1;
-					dataPackage.setConnectionId (connectionId);
-					ProxyClientPackageQueue.addPackage (Integer.toString (connectionId), dataPackage);
-					//System.out.println ("<- " + len);
 				}
-				String jsonString = proxyClientBufferedReader.readLine ();
-				if (jsonString == null)
+				catch (IOException e) 
 				{
-					buf = null;	
-					len = 0;
+					this.setIsStopped ();
+					return;
 				}
-				else
-				{		
-					Util.jsonParse (jsonString, mapIn, null);
-					len = Integer.parseInt (mapIn.get ("length"));
-					connectionId = Integer.parseInt (mapIn.get ("conid"));
-					String data = mapIn.get ("data");
-					buf = Util.fromBase58 (data);
-				}
+
+				DataPackage dataPackage = new DataPackage (tcpClientOutputStream);
+				dataPackage.setByteData (buf, len);
+				dataPackage.type = 1;
+				dataPackage.setConnectionId (connectionId);
+				ProxyClientPackageQueue.addPackage (Integer.toString (connectionId), dataPackage);
+				//System.out.println ("<- " + len);
+			}
+
+			String jsonString = null;
+
+			try
+			{
+				jsonString = proxyClientBufferedReader.readLine ();
+			}
+			catch (IOException e) 
+			{
+				this.setIsStopped ();
+				return;
+			}
+
+			if (jsonString == null)
+			{
+				this.setIsStopped ();
+				return;
+			}
+			else
+			{		
+				Util.jsonParse (jsonString, mapIn, null);
+				len = Integer.parseInt (mapIn.get ("length"));
+				connectionId = Integer.parseInt (mapIn.get ("conid"));
+				String data = mapIn.get ("data");
+				buf = Util.fromBase58 (data);
 			}
 		}
-		catch (IOException e) {}
+	}
+
+	private synchronized void setIsStopped ()
+	{
+		this.isStopped = true;
+	}
+
+	public synchronized boolean getIsStopped ()
+	{
+		return this.isStopped;	
 	}
 }

@@ -68,4 +68,10 @@ class ProxyClientPackageQueue
 
 		return packageId;
 	}
+
+	public static void clear ()
+	{
+		packageMap.clear ();
+		counterMap.clear ();
+	}
 }

@@ -10,14 +10,13 @@ class TcpClientListeningThread implements Runnable
 
 	private ServerSocket serverSocket;
 	private Socket proxyClientSocket;
-	private boolean stopFlag;
+	private boolean isForcedStop = false;
 	private int port;
 
 	TcpClientListeningThread (int port, Socket proxyClientSocket)
 	{
 		this.port = port;
 		this.proxyClientSocket = proxyClientSocket;
-		this.setStopFlag (false);
 		this.thread = new Thread (this);
 		this.thread.start();
 	}
@@ -30,65 +29,47 @@ class TcpClientListeningThread implements Runnable
 		}
 		catch (IOException e)
 		{
-			System.out.println ("error");
+			System.out.println ("TCP server socket error");
 			return;
 		}
 
-		while (!this.getStopFlag ())
-		{	
-			Socket tcpClientSocket = null;
+		Socket tcpClientSocket = null;
+
+		while (!this.getIsForcedStop ())
+		{
 			try
 			{
 				tcpClientSocket = this.serverSocket.accept ();
 			}
 			catch (IOException e)
 			{
-				if (!this.getStopFlag ())
+				if (!this.getIsForcedStop ())
 				{
-					System.out.println ("error");
+					System.out.println ("TCP client socket error");
 				}
 				return;
 			}
 
-			if (this.getStopFlag ()) return;
+			if (this.getIsForcedStop()) return;
 
 			Integer connectionId = ConnectionCounter.getNewConnectionId (tcpClientSocket);
 			TcpClientReadThread TcpClientReadThread = new TcpClientReadThread (tcpClientSocket, this.proxyClientSocket, connectionId);
-
-//			this.servicingThreadList.add (servicingThread);
-/*
-			ListIterator<ServicingThread> iterator = this.servicingThreadList.listIterator ();
-			while (iterator.hasNext ())
-			{
-				servicingThread = iterator.next ();
-				if (!servicingThread.thread.isAlive ()) iterator.remove ();
-			}
-*/
 		}
 	}
 
-	public synchronized void setStopFlag (boolean value)
+	private synchronized void setIsForcedStop ()
 	{
-		this.stopFlag = value;
+		this.isForcedStop = true;
 	}
 
-	public synchronized boolean getStopFlag ()
+	private synchronized boolean getIsForcedStop ()
 	{
-		return this.stopFlag;	
+		return this.isForcedStop;	
 	}
 
-	public void onStop ()
+	public void stop ()
 	{
-/*
-		System.out.println ("");
-		System.out.print ("  Shutting down the validation node. Waiting for threads...");
-		this.setStopFlag (true);
-
-		try
-		{
-			Thread.sleep (1000);
-		}
-		catch (InterruptedException e) {}
+		this.setIsForcedStop ();		
 
 		try
 		{
@@ -96,24 +77,14 @@ class TcpClientListeningThread implements Runnable
 		}
 		catch (IOException e) {}
 
-		ServicingThread servicingThread;
-		int i = 0;
-		while (this.servicingThreadList.size () != 0)
+		ConnectionCounter.clear ();
+
+		try
 		{
-			servicingThread = this.servicingThreadList.get (i);
-			if (!servicingThread.thread.isAlive ())
-			{
-				this.servicingThreadList.remove (i);
-				if (i >= this.servicingThreadList.size ()) i = 0;
-				//System.out.println (i);
-			}
-			else
-			{
-				if (i >= this.servicingThreadList.size () - 1) i = 0;
-				else i++;
-			}
+			this.thread.sleep (1000);
 		}
-		System.out.println (" done");
-		*/
-	}	
+		catch (InterruptedException e) {}
+
+		TcpClientPackageQueue.clear ();
+	}
 }

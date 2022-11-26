@@ -9,67 +9,103 @@ class ProxyClientListeningThread implements Runnable
 	public Thread thread;
 
 	private ServerSocket serverSocket;
-	private boolean stopFlag;
+	private boolean isForcedStop = false;
 	private int port;
 
 	ProxyClientListeningThread (int port)
 	{
 		this.port = port;
-		this.setStopFlag (false);
 		this.thread = new Thread (this);
 		this.thread.start();
 	}
 
 	public void run ()
 	{
-		try
-		{
-			this.serverSocket = new ServerSocket (port);
-		}
-		catch (IOException e)
-		{
-			System.out.println (" Server socket error");
-			return;
-		}
+		Socket proxyClientSocket = null;
+		TcpClientListeningThread tcpClientListeningThread = null;
+		ProxyClientReadThread proxyClientReadThread = null;
 
-		while (!this.getStopFlag ())
+		while (!this.getIsForcedStop ())
 		{	
-			Socket proxyClientSocket = null;
-			try
+			if (proxyClientSocket != null)
 			{
-				proxyClientSocket = this.serverSocket.accept ();
-			}
-			catch (IOException e)
-			{
-				if (!this.getStopFlag ())
+				if (proxyClientReadThread.getIsStopped ())
 				{
-					System.out.println ("Proxy client socket error");
+					try
+					{
+						proxyClientSocket.close();
+					}
+					catch (IOException e) {}
+					
+					proxyClientSocket = null;
+					ProxyClientPackageQueue.clear ();
+
+					if (tcpClientListeningThread != null)
+					{
+						tcpClientListeningThread.stop ();
+					}
+					tcpClientListeningThread = null;
+
+					continue;
 				}
-				return;
+				else
+				{
+					try
+					{
+						Thread.sleep (1000);
+					}
+					catch (InterruptedException e) {}	
+				}
 			}
+			else
+			{
+				try
+				{
+					this.serverSocket = new ServerSocket (port, 1);
+				}
+				catch (IOException e)
+				{
+					System.out.println (" Server socket error");
+					return;
+				}
 
-			if (this.getStopFlag ()) return;
+				try
+				{
+					proxyClientSocket = this.serverSocket.accept ();
+					this.serverSocket.close ();
+				}
+				catch (IOException e)
+				{
+					if (!this.getIsForcedStop ())
+					{
+						System.out.println ("Proxy client socket error");
+					}
+					return;
+				}
 
-			TcpClientListeningThread tcpClientListeningThread = new TcpClientListeningThread (Globals.getTcpPort (), proxyClientSocket);
-			ProxyClientReadThread proxyClientReadThread = new ProxyClientReadThread (proxyClientSocket);
+				if (this.getIsForcedStop ()) return;
+
+				tcpClientListeningThread = new TcpClientListeningThread (Globals.getTcpPort (), proxyClientSocket);
+				proxyClientReadThread = new ProxyClientReadThread (proxyClientSocket);
+			}
 		}
 	}
 
-	public synchronized void setStopFlag (boolean value)
+	private synchronized void setIsForcedStop ()
 	{
-		this.stopFlag = value;
+		this.isForcedStop = true;
 	}
 
-	public synchronized boolean getStopFlag ()
+	private synchronized boolean getIsForcedStop ()
 	{
-		return this.stopFlag;	
+		return this.isForcedStop;	
 	}
 
 	public void onStop ()
 	{
 		System.out.println ("");
 		System.out.print ("Shutting down...");
-		this.setStopFlag (true);
+		this.setIsForcedStop ();
 
 		try
 		{
@@ -83,25 +119,6 @@ class ProxyClientListeningThread implements Runnable
 		}
 		catch (IOException e) {}
 
-/*
-		ServicingThread servicingThread;
-		int i = 0;
-		while (this.servicingThreadList.size () != 0)
-		{
-			servicingThread = this.servicingThreadList.get (i);
-			if (!servicingThread.thread.isAlive ())
-			{
-				this.servicingThreadList.remove (i);
-				if (i >= this.servicingThreadList.size ()) i = 0;
-				//System.out.println (i);
-			}
-			else
-			{
-				if (i >= this.servicingThreadList.size () - 1) i = 0;
-				else i++;
-			}
-		}
-*/
 		System.out.println (" done");
 	}	
 }

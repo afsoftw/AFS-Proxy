@@ -2,6 +2,9 @@ package afs.proxy.server;
 
 import java.util.HashMap;
 import java.net.Socket;
+import java.util.Set;
+import java.util.Map.Entry;
+import java.io.IOException;
 
 class ConnectionCounter
 {
@@ -18,5 +21,24 @@ class ConnectionCounter
 	public static synchronized Socket getConnectionSocket ( Integer id)
 	{
 		return socketMap.get (id);
+	}
+
+	public static synchronized void clear ()
+	{
+		lastId = 0;
+
+		Set<Entry<Integer, Socket>> set = socketMap.entrySet ();
+		for (Entry<Integer, Socket> element : set)
+		{
+			Socket socket = element.getValue ();
+
+			try
+			{
+				socket.close ();
+			}
+			catch (IOException e) {}
+		}
+
+		socketMap.clear ();
 	}
 }
