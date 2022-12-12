@@ -10,6 +10,7 @@ class Globals
 	private static Integer tcpPort;
 	private static Socket proxySocket;
 	private static boolean isProxyConnected = false;
+	private static boolean keepalive = false;
 
 	public static synchronized void setProxyAddress (String address)
 	{
@@ -70,4 +71,14 @@ class Globals
 	{
 		return isProxyConnected;
 	}
+
+	public static synchronized void setKeepalive (boolean kaValue)
+	{
+		keepalive = kaValue;
+	}
+
+	public static synchronized boolean getKeepalive ()
+	{
+		return keepalive;
+	}	
 }

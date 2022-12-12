@@ -12,6 +12,8 @@ public class ProxyClient
 
 		int argsLen = args.length;
 
+		boolean keepalive = false;
+
 		for (int i = 0; i < argsLen; i++)
 		{
 			if (args[i].equals ("-h") || args[i].equals ("--help"))
@@ -21,6 +23,7 @@ public class ProxyClient
 				System.out.println ("  -p,  --proxy-port     Specify port of proxy-server (default: 10100)");
 				System.out.println ("  -A,  --tcp-address    Specify address of tcp service (default: 127.0.0.1)");
 				System.out.println ("  -P,  --tcp-port       Specify port of tcp service (default: 0)");
+				System.out.println ("  -k,  --keepalive      Send keepalive packets");
 				return;
 			}
 			else if (args[i].equals ("-a") || args[i].equals ("--proxy-address"))
@@ -39,6 +42,10 @@ public class ProxyClient
 			{
 				if (i < argsLen - 1) tcpPort = Integer.parseInt (args[i+1]);
 			}
+			else if (args[i].equals ("-k") || args[i].equals ("--keepalive"))
+			{
+				keepalive = true;
+			}
 		}
 
 		if (tcpPort < 1 || tcpPort > 65565)
@@ -51,7 +58,13 @@ public class ProxyClient
 		Globals.setProxyPort (proxyPort);
 		Globals.setTcpAddress (tcpAddress);
 		Globals.setTcpPort (tcpPort);
+		Globals.setKeepalive (keepalive);
 
 		ProxyConnectingThread proxyConnectingThread  = new ProxyConnectingThread ();
+
+		if (keepalive)
+		{
+			KeepaliveThread keepaliveThread = new KeepaliveThread ();
+		}
 	}
 }
